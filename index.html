@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Repository Tracker</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #222;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .search-box {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 8px;
+    width: 220px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+  }
+
+  button {
+    padding: 8px 14px;
+    border: none;
+    background-color: #e57373;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #d85c5c;
+  }
+
+  #status {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #555;
+  }
+
+  #status.error {
+    color: red;
+  }
+
+  .owner {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .owner img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+
+  .owner p {
+    margin: 3px 0;
+    font-size: 14px;
+  }
+
+  .repo {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .repo h3 {
+    margin: 0 0 6px 0;
+  }
+
+  .repo a {
+    color: #2d6cdf;
+    text-decoration: none;
+  }
+
+  .repo p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+
+  .small {
+    color: #666;
+    font-size: 13px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>GitHub Repository Tracker</h1>
+
+  <div class="search-box">
+    <input type="text" id="username" placeholder="Enter GitHub username">
+    <button id="searchBtn">Search</button>
+  </div>
+
+  <div id="status"></div>
+
+  <div id="ownerSection"></div>
+
+  <div id="repoSection"></div>
+
+</div>
+
+<script>
+
+  let timer = null;
+  let currentUser = "";
+
+  const usernameInput = document.getElementById("username");
+  const searchBtn = document.getElementById("searchBtn");
+  const statusDiv = document.getElementById("status");
+  const ownerSection = document.getElementById("ownerSection");
+  const repoSection = document.getElementById("repoSection");
+
+
+  function setStatus(message, isError) {
+
+    statusDiv.textContent = message;
+
+    if (isError) {
+      statusDiv.className = "error";
+    } else {
+      statusDiv.className = "";
+    }
+
+  }
+
+
+  async function fetchRepos(username) {
+
+    const response = await fetch(
+      "https://api.github.com/users/" + username + "/repos?per_page=100"
+    );
+
+    if (response.status === 404) {
+      throw new Error("Invalid GitHub username. User not found.");
+    }
+
+    if (response.status === 403) {
+      throw new Error(
+        "API rate limit exceeded. Please try again after some time."
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        "API error. Status code: " + response.status
+      );
+    }
+
+    const data = await response.json();
+
+    return data;
+  }
+
+
+  async function fetchOwner(username) {
+
+    const response = await fetch(
+      "https://api.github.com/users/" + username
+    );
+
+    if (response.status === 404) {
+      throw new Error("Invalid GitHub username. User not found.");
+    }
+
+    if (response.status === 403) {
+      throw new Error(
+        "API rate limit exceeded. Please try again after some time."
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        "API error. Status code: " + response.status
+      );
+    }
+
+    const data = await response.json();
+
+    return data;
+  }
+
+
+  function showOwner(owner) {
+
+    ownerSection.innerHTML =
+      '<div class="owner">' +
+
+        '<img src="' + owner.avatar_url + '" alt="avatar">' +
+
+        '<div>' +
+
+          '<h2 style="margin:0 0 5px 0;">' +
+            (owner.name || owner.login) +
+          '</h2>' +
+
+          '<p>Username: ' + owner.login + '</p>' +
+
+          '<p>Bio: ' +
+            (owner.bio || "Not available") +
+          '</p>' +
+
+          '<p>Location: ' +
+            (owner.location || "Not available") +
+          '</p>' +
+
+          '<p>Followers: ' +
+            owner.followers +
+            ' | Following: ' +
+            owner.following +
+          '</p>' +
+
+          '<p>Public Repos: ' +
+            owner.public_repos +
+          '</p>' +
+
+          '<p><a href="' +
+            owner.html_url +
+            '" target="_blank">View Profile</a></p>' +
+
+        '</div>' +
+
+      '</div>';
+  }
+
+
+  function showRepos(repos, owner) {
+
+    let html =
+      "<h2>Repositories (" +
+      repos.length +
+      ")</h2>";
+
+    for (let i = 0; i < repos.length; i++) {
+
+      const repo = repos[i];
+
+      html +=
+
+        '<div class="repo">' +
+
+          '<h3>' +
+
+            '<a href="' +
+            repo.html_url +
+            '" target="_blank">' +
+
+            repo.name +
+
+            '</a>' +
+
+          '</h3>' +
+
+          '<p>' +
+            (repo.description || "No description") +
+          '</p>' +
+
+          '<p class="small">' +
+
+            'Language: ' +
+            (repo.language || "N/A") +
+
+            ' | Stars: ' +
+            repo.stargazers_count +
+
+            ' | Forks: ' +
+            repo.forks_count +
+
+          '</p>' +
+
+          '<p class="small">' +
+
+            'Owner: ' +
+            owner.login +
+
+            ' (' +
+            (owner.name || "no name") +
+            ')' +
+
+          '</p>' +
+
+          '<p class="small">' +
+
+            'Last updated: ' +
+
+            new Date(repo.updated_at)
+              .toLocaleDateString() +
+
+          '</p>' +
+
+        '</div>';
+    }
+
+    repoSection.innerHTML = html;
+  }
+
+
+  async function loadData(username) {
+
+    try {
+
+      setStatus("Fetching data...", false);
+
+      const results = await Promise.all([
+        fetchRepos(username),
+        fetchOwner(username)
+      ]);
+
+      const repos = results[0];
+      const owner = results[1];
+
+      showOwner(owner);
+
+      if (repos.length === 0) {
+
+        repoSection.innerHTML =
+          "<p>This user has no public repositories.</p>";
+
+      } else {
+
+        showRepos(repos, owner);
+
+      }
+
+      setStatus(
+        "Last refreshed at " +
+        new Date().toLocaleTimeString() +
+        " (auto refresh every 60 seconds)",
+        false
+      );
+
+    } catch (error) {
+
+      ownerSection.innerHTML = "";
+      repoSection.innerHTML = "";
+
+      if (error.message === "Failed to fetch") {
+
+        setStatus(
+          "Network error. Please check your internet connection.",
+          true
+        );
+
+      } else {
+
+        setStatus(error.message, true);
+
+      }
+    }
+  }
+
+
+  async function startTracking() {
+
+    const username =
+      usernameInput.value.trim();
+
+    if (username === "") {
+
+      setStatus(
+        "Please enter a GitHub username.",
+        true
+      );
+
+      return;
+    }
+
+    if (timer !== null) {
+
+      clearInterval(timer);
+      timer = null;
+
+    }
+
+    currentUser = username;
+
+    await loadData(currentUser);
+
+    timer = setInterval(function () {
+
+      loadData(currentUser);
+
+    }, 60000);
+  }
+
+
+  searchBtn.addEventListener(
+    "click",
+    startTracking
+  );
+
+
+  usernameInput.addEventListener(
+    "keypress",
+    function (event) {
+
+      if (event.key === "Enter") {
+
+        startTracking();
+
+      }
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
