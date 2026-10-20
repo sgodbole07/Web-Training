@@ -1,11 +1,14 @@
 import { Suspense, useState } from 'react';
 import { UserProvider, useUser } from './context/UserContext.jsx';
+import { CartProvider } from './context/CartContext.jsx';
 import { fetchProducts } from './data/products.js';
 import { HERO_IMAGE, initAssetHints } from './assetHints.js';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import ProductList from './components/ProductList.jsx';
+import ProductDetails from './components/ProductDetails.jsx';
 import RegisterForm from './components/RegisterForm.jsx';
 import UserProfile from './components/UserProfile.jsx';
+import CartBadge from './components/CartBadge.jsx';
 
 function Skeleton() {
   return (
@@ -20,24 +23,36 @@ function Skeleton() {
 function Store() {
   initAssetHints(); // Asset Loading APIs
   const { user } = useUser();
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Create the Promise once and keep it in state so it is stable across renders.
   const [productsPromise, setProductsPromise] = useState(fetchProducts);
 
+  const title = selectedProduct
+    ? `Mini E-Commerce Store – ${selectedProduct.name}`
+    : user
+      ? `Mini E-Commerce Store – Welcome, ${user.name}`
+      : 'Mini E-Commerce Store – Products';
+
   return (
     <>
       {/* Document Metadata: React hoists these into <head> */}
-      <title>
-        {user ? `Mini E-Commerce Store – Welcome, ${user.name}` : 'Mini E-Commerce Store – Products'}
-      </title>
+      <title>{title}</title>
       <meta
         name="description"
-        content="Browse our catalogue of audio gear, outdoor equipment and home essentials. Register to start shopping."
+        content={
+          selectedProduct
+            ? selectedProduct.description
+            : 'Browse our catalogue of audio gear, outdoor equipment and home essentials. Register to start shopping.'
+        }
       />
 
       <header className="topbar">
         <h1>Mini Store</h1>
-        <UserProfile />
+        <div className="topbar-right">
+          <CartBadge />
+          <UserProfile />
+        </div>
       </header>
 
       <img className="hero" src={HERO_IMAGE} alt="" width="1200" height="320" />
@@ -48,20 +63,26 @@ function Store() {
         </aside>
 
         <section>
-          <h2>Products</h2>
-          <ErrorBoundary
-            onReset={() => setProductsPromise(fetchProducts())}
-            fallback={(error, reset) => (
-              <div className="panel" role="alert">
-                <p className="error">Couldn't load products: {error.message}</p>
-                <button className="btn small" onClick={reset}>Try again</button>
-              </div>
-            )}
-          >
-            <Suspense fallback={<Skeleton />}>
-              <ProductList productsPromise={productsPromise} />
-            </Suspense>
-          </ErrorBoundary>
+          {selectedProduct ? (
+            <ProductDetails product={selectedProduct} onBack={() => setSelectedProduct(null)} />
+          ) : (
+            <>
+              <h2>Products</h2>
+              <ErrorBoundary
+                onReset={() => setProductsPromise(fetchProducts())}
+                fallback={(error, reset) => (
+                  <div className="panel" role="alert">
+                    <p className="error">Couldn't load products: {error.message}</p>
+                    <button className="btn small" onClick={reset}>Try again</button>
+                  </div>
+                )}
+              >
+                <Suspense fallback={<Skeleton />}>
+                  <ProductList productsPromise={productsPromise} onSelect={setSelectedProduct} />
+                </Suspense>
+              </ErrorBoundary>
+            </>
+          )}
         </section>
       </main>
     </>
@@ -71,7 +92,9 @@ function Store() {
 export default function App() {
   return (
     <UserProvider>
-      <Store />
+      <CartProvider>
+        <Store />
+      </CartProvider>
     </UserProvider>
   );
 }

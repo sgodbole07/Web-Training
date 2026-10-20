@@ -1,6 +1,7 @@
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useUser } from '../context/UserContext.jsx';
+import TextInput from './TextInput.jsx';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +28,11 @@ const initialState = { status: 'idle', errors: {}, values: { name: '', email: ''
 export default function RegisterForm() {
   const { user, setUser } = useUser();
 
+  // Refs passed straight into <TextInput ref={...}> (ref as a prop)
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
   // Receives (previousState, formData) and returns the next state
   async function registerAction(_prev, formData) {
     const values = {
@@ -51,6 +57,17 @@ export default function RegisterForm() {
 
   const [state, formAction] = useActionState(registerAction, initialState);
 
+  // Meaningful DOM operation through the refs: focus the first invalid field
+  useEffect(() => {
+    if (state.status !== 'error') return;
+    const firstInvalid = [
+      ['name', nameRef],
+      ['email', emailRef],
+      ['password', passwordRef],
+    ].find(([field]) => state.errors[field]);
+    firstInvalid?.[1].current?.focus();
+  }, [state]);
+
   if (user) {
     return (
       <section className="panel" aria-live="polite">
@@ -66,24 +83,9 @@ export default function RegisterForm() {
     <section className="panel">
       <h2>Create your account</h2>
       <form action={formAction} noValidate>
-        <label>
-          Name
-          <input name="name" type="text" autoComplete="name" defaultValue={values.name} aria-invalid={Boolean(errors.name)} />
-          {errors.name && <span className="error" role="alert">{errors.name}</span>}
-        </label>
-
-        <label>
-          Email
-          <input name="email" type="email" autoComplete="email" defaultValue={values.email} aria-invalid={Boolean(errors.email)} />
-          {errors.email && <span className="error" role="alert">{errors.email}</span>}
-        </label>
-
-        <label>
-          Password
-          <input name="password" type="password" autoComplete="new-password" aria-invalid={Boolean(errors.password)} />
-          {errors.password && <span className="error" role="alert">{errors.password}</span>}
-        </label>
-
+        <TextInput ref={nameRef} label="Name" name="name" type="text" autoComplete="name" defaultValue={values.name} error={errors.name} />
+        <TextInput ref={emailRef} label="Email" name="email" type="email" autoComplete="email" defaultValue={values.email} error={errors.email} />
+        <TextInput ref={passwordRef} label="Password" name="password" type="password" autoComplete="new-password" error={errors.password} />
         <SubmitButton />
       </form>
     </section>
