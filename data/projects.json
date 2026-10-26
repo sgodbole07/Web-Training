@@ -1,0 +1,194 @@
+[
+  {
+    "id": "1",
+    "name": "Nextjs Dashboard Revamp",
+    "description": "Rebuild the internal dashboard on the Next.js App Router with nested layouts and streaming widgets.",
+    "status": "active",
+    "progress": 68,
+    "owner": "Aisha Khan",
+    "deadline": "2026-12-15",
+    "tags": ["nextjs", "dashboard", "frontend"],
+    "team": [
+      { "name": "Aisha Khan", "role": "Project Lead" },
+      { "name": "Rohan Mehta", "role": "Frontend Engineer" },
+      { "name": "Sara Lopez", "role": "UX Designer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Create dashboard layout", "assignee": "Rohan Mehta", "done": true },
+      { "id": 2, "title": "Add streaming activity feed", "assignee": "Rohan Mehta", "done": true },
+      { "id": 3, "title": "Design analytics widgets", "assignee": "Sara Lopez", "done": false },
+      { "id": 4, "title": "Accessibility audit", "assignee": "Aisha Khan", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Rohan merged the sidebar navigation", "date": "2026-10-22" },
+      { "id": 2, "text": "Sara uploaded new widget mockups", "date": "2026-10-20" },
+      { "id": 3, "text": "Aisha created the Q4 milestone", "date": "2026-10-15" }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Customer Portal",
+    "description": "Self-service portal where customers track orders, invoices and support requests.",
+    "status": "active",
+    "progress": 45,
+    "owner": "Vikram Rao",
+    "deadline": "2027-01-30",
+    "tags": ["portal", "customers", "nextjs"],
+    "team": [
+      { "name": "Vikram Rao", "role": "Project Lead" },
+      { "name": "Neha Iyer", "role": "Backend Engineer" },
+      { "name": "Tom Becker", "role": "QA Engineer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Order tracking page", "assignee": "Neha Iyer", "done": true },
+      { "id": 2, "title": "Invoice downloads", "assignee": "Neha Iyer", "done": false },
+      { "id": 3, "title": "Support ticket form", "assignee": "Vikram Rao", "done": false },
+      { "id": 4, "title": "Write regression tests", "assignee": "Tom Becker", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Neha deployed order tracking to staging", "date": "2026-10-24" },
+      { "id": 2, "text": "Tom reported 3 layout bugs", "date": "2026-10-21" }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Mobile Banking App",
+    "description": "Cross-platform mobile app for retail banking with biometric login and instant transfers.",
+    "status": "on-hold",
+    "progress": 30,
+    "owner": "Priya Nair",
+    "deadline": "2027-03-10",
+    "tags": ["mobile", "banking", "security"],
+    "team": [
+      { "name": "Priya Nair", "role": "Project Lead" },
+      { "name": "Daniel Cho", "role": "Mobile Engineer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Biometric login prototype", "assignee": "Daniel Cho", "done": true },
+      { "id": 2, "title": "Transfer flow screens", "assignee": "Daniel Cho", "done": false },
+      { "id": 3, "title": "Security review", "assignee": "Priya Nair", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Project paused pending compliance approval", "date": "2026-10-10" },
+      { "id": 2, "text": "Daniel finished the login prototype", "date": "2026-09-28" }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Design System Library",
+    "description": "Shared component library with tokens, documentation and a dashboard theme for every product team.",
+    "status": "completed",
+    "progress": 100,
+    "owner": "Sara Lopez",
+    "deadline": "2026-09-30",
+    "tags": ["design", "components", "dashboard"],
+    "team": [
+      { "name": "Sara Lopez", "role": "Design Lead" },
+      { "name": "Rohan Mehta", "role": "Frontend Engineer" },
+      { "name": "Kiran Patel", "role": "Technical Writer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Define colour tokens", "assignee": "Sara Lopez", "done": true },
+      { "id": 2, "title": "Publish component package", "assignee": "Rohan Mehta", "done": true },
+      { "id": 3, "title": "Write usage guidelines", "assignee": "Kiran Patel", "done": true }
+    ],
+    "activity": [
+      { "id": 1, "text": "Version 1.0 released to all teams", "date": "2026-09-30" },
+      { "id": 2, "text": "Kiran published the usage guide", "date": "2026-09-25" }
+    ]
+  },
+  {
+    "id": "5",
+    "name": "Data Analytics Pipeline",
+    "description": "Streaming pipeline that aggregates product events into reports for the leadership dashboard.",
+    "status": "active",
+    "progress": 52,
+    "owner": "Arjun Desai",
+    "deadline": "2027-02-14",
+    "tags": ["data", "analytics", "dashboard"],
+    "team": [
+      { "name": "Arjun Desai", "role": "Project Lead" },
+      { "name": "Lina Gomez", "role": "Data Engineer" },
+      { "name": "Ibrahim Ali", "role": "Data Analyst" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Event ingestion service", "assignee": "Lina Gomez", "done": true },
+      { "id": 2, "title": "Aggregation jobs", "assignee": "Lina Gomez", "done": false },
+      { "id": 3, "title": "Weekly report templates", "assignee": "Ibrahim Ali", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Lina reduced ingestion latency by 40%", "date": "2026-10-23" },
+      { "id": 2, "text": "Ibrahim drafted report templates", "date": "2026-10-18" }
+    ]
+  },
+  {
+    "id": "6",
+    "name": "HR Onboarding Tool",
+    "description": "Guided onboarding checklists and document collection for new employees.",
+    "status": "completed",
+    "progress": 100,
+    "owner": "Meera Shah",
+    "deadline": "2026-08-31",
+    "tags": ["hr", "forms", "workflow"],
+    "team": [
+      { "name": "Meera Shah", "role": "Project Lead" },
+      { "name": "Chris Evans", "role": "Full Stack Engineer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Checklist builder", "assignee": "Chris Evans", "done": true },
+      { "id": 2, "title": "Document upload", "assignee": "Chris Evans", "done": true }
+    ],
+    "activity": [
+      { "id": 1, "text": "Tool launched company-wide", "date": "2026-08-31" },
+      { "id": 2, "text": "Meera collected final feedback", "date": "2026-08-26" }
+    ]
+  },
+  {
+    "id": "7",
+    "name": "Notification Service",
+    "description": "Central service for email, push and in-app notifications with user preferences.",
+    "status": "on-hold",
+    "progress": 20,
+    "owner": "Farhan Sheikh",
+    "deadline": "2027-04-01",
+    "tags": ["backend", "notifications", "api"],
+    "team": [
+      { "name": "Farhan Sheikh", "role": "Project Lead" },
+      { "name": "Anna Petrov", "role": "Backend Engineer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Define event schema", "assignee": "Anna Petrov", "done": true },
+      { "id": 2, "title": "Email provider integration", "assignee": "Anna Petrov", "done": false },
+      { "id": 3, "title": "Preference centre UI", "assignee": "Farhan Sheikh", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Work paused until staffing is confirmed", "date": "2026-10-05" }
+    ]
+  },
+  {
+    "id": "8",
+    "name": "Inventory Tracker",
+    "description": "Warehouse inventory tracking with barcode scanning and low stock alerts. Data source is occasionally unstable.",
+    "status": "active",
+    "progress": 74,
+    "owner": "Karan Malhotra",
+    "deadline": "2026-12-05",
+    "tags": ["inventory", "warehouse", "nextjs"],
+    "team": [
+      { "name": "Karan Malhotra", "role": "Project Lead" },
+      { "name": "Zoe Williams", "role": "Frontend Engineer" },
+      { "name": "Omar Haddad", "role": "Backend Engineer" }
+    ],
+    "tasks": [
+      { "id": 1, "title": "Barcode scanning support", "assignee": "Zoe Williams", "done": true },
+      { "id": 2, "title": "Low stock alerts", "assignee": "Omar Haddad", "done": true },
+      { "id": 3, "title": "Bulk import tool", "assignee": "Omar Haddad", "done": false },
+      { "id": 4, "title": "Warehouse pilot rollout", "assignee": "Karan Malhotra", "done": false }
+    ],
+    "activity": [
+      { "id": 1, "text": "Omar shipped low stock alerts", "date": "2026-10-25" },
+      { "id": 2, "text": "Zoe fixed scanner permissions", "date": "2026-10-19" },
+      { "id": 3, "text": "Karan scheduled the pilot rollout", "date": "2026-10-12" }
+    ]
+  }
+]
