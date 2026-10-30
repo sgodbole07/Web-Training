@@ -1,4 +1,6 @@
-// Shell: wired to cart state in each deliverable branch.
+import { selectTotalItems, useCartStore } from '../store/cartStore';
+
 export default function CartBadge() {
-  return <span className="cart-badge" aria-label="Items in cart">0</span>;
+  const count = useCartStore(selectTotalItems);
+  return <span className="cart-badge" aria-label="Items in cart">{count}</span>;
 }
