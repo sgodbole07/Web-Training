@@ -1,0 +1,29 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f5f6f8; color: #1f2430; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #fff; border-bottom: 1px solid #e3e5ea; position: sticky; top: 0; }
+.header h1 { margin: 0; font-size: 1.3rem; }
+.main { padding: 24px; max-width: 960px; margin: 0 auto; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+.card { background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.card h3 { margin: 0; font-size: 1rem; }
+.price { margin: 0; font-weight: 600; }
+.btn { border: 1px solid #3b5bdb; background: #3b5bdb; color: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: #fff; color: #3b5bdb; }
+.btn-danger { background: #fff; color: #c92a2a; border-color: #c92a2a; padding: 4px 8px; }
+.btn-primary { width: 100%; }
+.cart-badge { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: 10px; background: #3b5bdb; color: #fff; font-size: 0.8rem; text-align: center; }
+.drawer { position: fixed; top: 0; right: 0; width: 380px; max-width: 100%; height: 100%; background: #fff; box-shadow: -4px 0 16px rgba(0,0,0,.15); transform: translateX(100%); transition: transform .25s; display: flex; flex-direction: column; padding: 16px; z-index: 10; }
+.drawer.open { transform: translateX(0); }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; }
+.cart-list { list-style: none; padding: 0; margin: 16px 0; flex: 1; overflow-y: auto; }
+.cart-row { display: flex; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid #eee; }
+.cart-row-end { display: flex; align-items: center; gap: 10px; }
+.muted { color: #6b7280; font-size: 0.85rem; }
+.drawer-footer { border-top: 1px solid #eee; padding-top: 12px; display: flex; flex-direction: column; gap: 12px; }
+.total { display: flex; justify-content: space-between; }
+.status { color: #6b7280; }
+.status.error, .alert.error { color: #c92a2a; }
+.alert { padding: 8px 12px; border-radius: 6px; background: #f1f3f5; }
+.alert.success { background: #ebfbee; color: #2b8a3e; }
+.alert.error { background: #fff5f5; }
