@@ -27,3 +27,6 @@ body { margin: 0; font-family: system-ui, sans-serif; background: #f5f6f8; color
 .alert { padding: 8px 12px; border-radius: 6px; background: #f1f3f5; }
 .alert.success { background: #ebfbee; color: #2b8a3e; }
 .alert.error { background: #fff5f5; }
+.payment-panel { position: fixed; left: 16px; bottom: 16px; width: 300px; background: #fff; border: 1px solid #e3e5ea; border-radius: 10px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.1); display: flex; flex-direction: column; gap: 8px; }
+.payment-panel h2 { margin: 0; font-size: 1.05rem; }
+.panel-actions { display: flex; gap: 8px; }
