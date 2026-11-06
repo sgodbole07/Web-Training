@@ -6,13 +6,60 @@ const { user, defaultSettings } = require("./data");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+const ALLOWED_SETTINGS = {
+    theme: ["light", "dark"],
+    language: ["en", "fr"],
+    fontSize: ["small", "medium", "large"]
+};
 
-/*
- * Home page
- */
+const CONTENT_SECURITY_POLICY = [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self'",
+    "img-src 'self' data:",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+    "frame-ancestors 'none'"
+].join("; ");
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function serializeForScript(value) {
+    return JSON.stringify(value)
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026")
+        .replace(/\u2028/g, "\\u2028")
+        .replace(/\u2029/g, "\\u2029");
+}
+
+function toPublicUser({ id, name, email, role }) {
+    return { id, name, email, role };
+}
+
+app.use((req, res, next) => {
+    res.set({
+        "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin"
+    });
+    next();
+});
+
+app.use(express.json({ limit: "10kb" }));
+
 app.get("/", (req, res) => {
-    const initialUserData = JSON.stringify(user);
+    const initialUserData = serializeForScript(toPublicUser(user));
 
     res.send(`
         <!DOCTYPE html>
@@ -75,9 +122,7 @@ app.get("/", (req, res) => {
                 </section>
             </main>
 
-            <script>
-                window.initialUser = ${initialUserData};
-            </script>
+            <script type="application/json" id="initial-user">${initialUserData}</script>
 
             <script src="/app.js"></script>
         </body>
@@ -85,16 +130,10 @@ app.get("/", (req, res) => {
     `);
 });
 
-/*
- * Profile API
- */
 app.get("/api/profile", (req, res) => {
-    res.json(user);
+    res.json(toPublicUser(user));
 });
 
-/*
- * Settings API
- */
 app.get("/api/settings", (req, res) => {
     res.json(defaultSettings);
 });
@@ -102,10 +141,30 @@ app.get("/api/settings", (req, res) => {
 app.post("/api/settings", (req, res) => {
     const incomingSettings = req.body;
 
+    if (
+        !incomingSettings ||
+        typeof incomingSettings !== "object" ||
+        Array.isArray(incomingSettings)
+    ) {
+        return res.status(400).json({
+            message: "Invalid settings payload."
+        });
+    }
+
     const settings = {};
 
-    for (const key in incomingSettings) {
-        settings[key] = incomingSettings[key];
+    for (const [key, allowedValues] of Object.entries(ALLOWED_SETTINGS)) {
+        const value = Object.hasOwn(incomingSettings, key)
+            ? incomingSettings[key]
+            : defaultSettings[key];
+
+        if (!allowedValues.includes(value)) {
+            return res.status(400).json({
+                message: `Invalid value for ${key}.`
+            });
+        }
+
+        settings[key] = value;
     }
 
     res.json({
@@ -114,9 +173,6 @@ app.post("/api/settings", (req, res) => {
     });
 });
 
-/*
- * Account page
- */
 app.get("/account", (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -128,32 +184,7 @@ app.get("/account", (req, res) => {
                 content="width=device-width, initial-scale=1.0"
             >
             <title>Account Settings</title>
-
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    background: #f4f4f4;
-                    margin: 0;
-                    padding: 40px;
-                }
-
-                .account-card {
-                    max-width: 600px;
-                    margin: auto;
-                    background: white;
-                    padding: 30px;
-                    border-radius: 8px;
-                }
-
-                .danger {
-                    background: #c62828;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    cursor: pointer;
-                    border-radius: 4px;
-                }
-            </style>
+            <link rel="stylesheet" href="/account.css">
         </head>
 
         <body>
@@ -162,17 +193,17 @@ app.get("/account", (req, res) => {
 
                 <p>
                     <strong>Name:</strong>
-                    ${user.name}
+                    ${escapeHtml(user.name)}
                 </p>
 
                 <p>
                     <strong>Email:</strong>
-                    ${user.email}
+                    ${escapeHtml(user.email)}
                 </p>
 
                 <p>
                     <strong>Role:</strong>
-                    ${user.role}
+                    ${escapeHtml(user.role)}
                 </p>
 
                 <button
@@ -185,14 +216,7 @@ app.get("/account", (req, res) => {
                 <p id="status"></p>
             </div>
 
-            <script>
-                document
-                    .getElementById("delete-account")
-                    .addEventListener("click", () => {
-                        document.getElementById("status").textContent =
-                            "Account deletion action triggered.";
-                    });
-            </script>
+            <script src="/account.js"></script>
         </body>
         </html>
     `);
@@ -200,6 +224,10 @@ app.get("/account", (req, res) => {
 
 app.use(express.static(path.join(__dirname, "..", "client")));
 
-app.listen(PORT, () => {
-    console.log(`Application running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Application running at http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

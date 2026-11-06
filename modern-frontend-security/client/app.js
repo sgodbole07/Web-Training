@@ -1,50 +1,52 @@
-const app = document.getElementById("app");
+const appRoot = document.getElementById("app");
+
+function readInitialUser() {
+    const element = document.getElementById("initial-user");
+
+    if (!element) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(element.textContent) || {};
+    } catch (error) {
+        return {};
+    }
+}
+
+const initialUser = readInitialUser();
 
 const params = new URLSearchParams(window.location.search);
 
 const username =
     params.get("name") ||
-    window.initialUser?.name ||
+    initialUser.name ||
     "Guest";
 
-app.innerHTML = `
-    <section class="profile-card">
-        <h2>Welcome, ${username}</h2>
+const profileCard = document.createElement("section");
+profileCard.className = "profile-card";
 
-        <p>
-            Email:
-            ${window.initialUser?.email || "Unknown"}
-        </p>
+const heading = document.createElement("h2");
+heading.textContent = `Welcome, ${username}`;
 
-        <p>
-            Role:
-            ${window.initialUser?.role || "User"}
-        </p>
-    </section>
-`;
+const emailLine = document.createElement("p");
+emailLine.append("Email: ", initialUser.email || "Unknown");
 
-function prepareSettings(userSettings) {
-    const settings = {};
+const roleLine = document.createElement("p");
+roleLine.append("Role: ", initialUser.role || "User");
 
-    for (const key in userSettings) {
-        settings[key] = userSettings[key];
-    }
-
-    return settings;
-}
+profileCard.append(heading, emailLine, roleLine);
+appRoot.replaceChildren(profileCard);
 
 const saveButton = document.getElementById("save-settings");
+const settingsStatus = document.getElementById("settings-status");
 
 saveButton.addEventListener("click", async () => {
-    const theme = document.getElementById("theme").value;
-    const language = document.getElementById("language").value;
-    const fontSize = document.getElementById("fontSize").value;
-
-    const settings = prepareSettings({
-        theme,
-        language,
-        fontSize
-    });
+    const settings = {
+        theme: document.getElementById("theme").value,
+        language: document.getElementById("language").value,
+        fontSize: document.getElementById("fontSize").value
+    };
 
     try {
         const response = await fetch("/api/settings", {
@@ -57,10 +59,8 @@ saveButton.addEventListener("click", async () => {
 
         const result = await response.json();
 
-        document.getElementById("settings-status").textContent =
-            result.message;
+        settingsStatus.textContent = result.message;
     } catch (error) {
-        document.getElementById("settings-status").textContent =
-            "Unable to save settings.";
+        settingsStatus.textContent = "Unable to save settings.";
     }
 });
